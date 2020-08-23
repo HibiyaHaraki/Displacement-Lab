@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>Displacement Lab</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+
+  <body onload="Draw(-1);" style="display: block;">
+    <div id="Input_Form">
+      <h1 class="Title">Beam Deflection (Material Mechanics / Structure Analysis)</h1>
+      <p style="width: 98vw; text-align: center;"><a class="Start_Calc" href="Explanation/Displacement_Lab_Simulator.pdf" target="_blank">HELP</a></p>
+      <ul style="width: 98vw; padding: 0; margin: 0;">
+        <li style="min-height: 50vh; width: 99vw;">
+          <ul class="Position">
+            <li id="Figure" style="width:58vw; height:50vh; padding: 0; margin: 0;">
+              <canvas id="canvas" style="width:59vw; height:49vh; padding: 0; margin: auto;"></canvas>
+            </li>
+            <li class="Setting" id="normal" style="width:35vw; min-height:50vh; padding: 0; margin: 0;">
+              <h2>Beam</h2>
+              <table>
+                <tr>
+                  <td>length</td>
+                  <td>:</td>
+                  <td class="Input" colspan="3"><input onclick="Length_start();" id="Beam-length" type="number"> m</td>
+                </tr>
+                <tr>
+                  <td>height</td>
+                  <td>:</td>
+                  <td class="Input" colspan="3"><input id="Beam-height" onclick="Height_start();" type="number"> m</td>
+                </tr>
+                <tr id="Width">
+                  <td>width</td>
+                  <td>:</td>
+                  <td class="Input" colspan="3"><input id="Beam-width" onclick="Width_start();" type="number"> m</td>
+                </tr>
+                <tr>
+                  <td>Young's<br>Modulus</td>
+                  <td>:</td>
+                  <td class="Input" colspan="3"><input id="Young" onclick="Young_start();" type="number"> GPa</td>
+                </tr>
+                <tr>
+                  <td>Cross Section</td>
+                  <td>:</td>
+                  <th><a href="javascript:Cross_rect()"><img id="Cross-rect" src="img/rect.png"></a></th>
+                  <th><a href="javascript:Cross_circ()"><img id="Cross-circ" src="img/circ.png"></a></th>
+                  <th><a href="javascript:Cross_tri()"><img id="Cross-tria" src="img/tria.png"></a></th>
+                </tr>
+              </table>
+              <p style="text-align:center;"><a class="Start_Calc" href="javascript:AnalyzeFEM();">FEM</a><a class="Start_Calc" href="javascript:AnalyzeFDM();">FDM</a></p>
+            </li>
+            <li class="Setting" id="One-Point-Set" style="width:35vw; min-height:50vh; padding: 0; margin: 0; display:none;">
+              <h2>One-Point Load</h2>
+              <table>
+                <tr>
+                  <td>Position</td>
+                  <td>:</td>
+                  <td>x = <input value="-1" id="One-Point-Load-Position" type="number"> m</td>
+                </tr>
+                <tr>
+                  <td>Pointer</td>
+                  <td>:</td>
+                  <td>x = <output id="One-Point-Load-DPosition"></output> m</td>
+                </tr>
+                <tr>
+                  <td>Value</td>
+                  <td>:</td>
+                  <td><input id="One-Point-Load-Value" onclick="Draw(-1);" type="number"> N</td>
+                </tr>
+              </table>
+              <p><a class="Back" href="javascript:Back();">Back</a><a class="Start_Calc" href="javascript:Resister_One_Point();">Register</a></p>
+            </li>
+            <li class="Setting" id="Distributed-Set" style="width:35vw; min-height:50vh; padding: 0; margin: 0; display:none;">
+              <h2>Distributed Load</h2>
+              <table>
+                <tr>
+                  <th rowspan="2">Position</th>
+                  <td>start</td>
+                  <td>:</td>
+                  <td>x = <input id="Distributed-Load-SPosition" onclick="Start_Option();" type="number"> m</td>
+                </tr>
+                <tr>
+                  <td>end</td>
+                  <td>:</td>
+                  <td>x = <input id="Distributed-Load-EPosition" onclick="End_Option();" type="number"> m</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Pointer</td>
+                  <td>:</td>
+                  <td>x = <output id="Distributed-Load-DPosition"></output> m</td>
+                </tr>
+                <tr>
+                  <th rowspan="2">Value</th>
+                  <td>x = (start)</td>
+                  <td>:</td>
+                  <td><input id="Distributed-Load-SValue" onclick="Start_Option();" type="number"> N</td>
+                </tr>
+                <tr>
+                  <td>x = (end)</td>
+                  <td>:</td>
+                  <td><input id="Distributed-Load-EValue" onclick="End_Option();" type="number"> N</td>
+                </tr>
+              </table>
+              <p><a class="Back" href="javascript:Back();">Back</a><a class="Start_Calc" href="javascript:Resister_Distributed();">Register</a></p>
+            </li>
+            <li class="Setting" id="Rotatable-Set" style="width:35vw; min-height:50vh; padding: 0; margin: 0; display:none;">
+              <h2>Rotatable Support</h2>
+              <table>
+                <tr>
+                  <td>Position</td>
+                  <td>:</td>
+                  <td>x = <input id="Rotatable-Support-Position" type="number"> m</td>
+                </tr>
+                <tr>
+                  <td>Pointer</td>
+                  <td>:</td>
+                  <td>x = <output id="Rotatable-Support-DPosition" type="number"></output> m</td>
+                </tr>
+              </table>
+              <p><a class="Back" href="javascript:Back();">Back</a><a class="Start_Calc" href="javascript:Resister_Rotatable();">Register</a></p>
+            </li>
+            <li class="Setting" id="Fixed-Set" style="width:35vw; min-height:50vh; padding: 0; margin: 0; display:none;">
+              <h2>Fixed Support</h2>
+              <table>
+                <tr>
+                  <td>Position</td>
+                  <td>:</td>
+                  <td>x = <input id="Fixed-Support-Position" type="number"> m</td>
+                </tr>
+                <tr>
+                  <td>Pointer</td>
+                  <td>:</td>
+                  <td>x = <output id="Fixed-Support-DPosition" type="number"></output> m</td>
+                </tr>
+              </table>
+              <p><a class="Back" href="javascript:Back();">Back</a><a class="Start_Calc" href="javascript:Resister_Fix();">Register</a></p>
+            </li>
+          </ul>
+        </li>
+        <li style="width:98vw; height:39vh; margin: 0; padding: 0;">
+          <ul class="Position">
+            <li style="width:45vw; height:35vh; padding: 0; margin: 0;">
+              <table class="Item">
+                <tr>
+                  <td><a href="javascript:One_Point()"><img id="One-Point" src="img/one_point.png"></a></td>
+                  <td><a href="javascript:Distributed()"><img id="Distributed" src="img/distributed.png"></a></td>
+                  <td><a href="javascript:Rotatable()"><img id="Rotatable" src="img/rotatable.png"></a></td>
+                  <td><a href="javascript:Fixed()"><img id="Fixed" src="img/fixed.png"></a></td>
+                </tr>
+                <tr>
+                  <th>One-Point</th>
+                  <th>Linear<br>Distributed</th>
+                  <th>Rotatable</th>
+                  <th>Fixed</th>
+                </tr>
+                <tr>
+                  <th colspan="2">Load</th>
+                  <th colspan="2">Support</th>
+                </tr>
+              </table>
+            </li>
+            <li style="width:49vw; height:35vh; padding: 0; margin: 0; overflow-y: auto;">
+              <h2 style="text-align: center;">Item</h2>
+              <table class="Set-Item">
+                <thead>
+                  <tr style="border-bottom: solid 1px #000;">
+                    <td></td>
+                    <th>Beam</th>
+                    <td colspan="3"><output id="Beam-Info"></output></td>
+                  </tr>
+                  <tr>
+                    <th>No.</th>
+                    <th>Item</th>
+                    <th>Position</th>
+                    <th>Value</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody id="Set-Item">
+                </tbody>
+              </table>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div id="Calc_Form">
+      <h1>Calculation Failed.</h1>
+      <h2><a class="Fail_Back" href="javascript:Back();">Back</a></h2>
+    </div>
+    <div id="Result_Form">
+      <div id="Result-Figure">
+        <canvas id="Result-Draw"></canvas>
+      </div>
+      <p></p>
+      <h1 id="Result_Type"></h1>
+      <ul class="Result_list">
+        <li>
+          <canvas id="Result-Deflection"></canvas>
+        </li>
+        <li>
+          <canvas id="Result-Theta"></canvas>
+        </li>
+        <li>
+          <canvas id="Result-Force"></canvas>
+        </li>
+        <li>
+          <canvas id="Result-Moment"></canvas>
+        </li>
+      </ul>
+      <h4> <br>This software use Central Difference Approximation for deriving Slope, SFD, and BMD.<br>Therefore, large errors are likely to occur especially at the edges and the supports.<br>In addition, the deflections at the rotatable support must be zero by this code. This could be a reason of error.<br>Please see and discuss if this result is accurate.<br>　</h4>
+      <h2><a class="Another_Input" id="FEM_Input" href="javascript:AnalyzeFEM();">FEM</a><a class="Another_Input" id="FDM_Input" href="javascript:AnalyzeFDM();">FDM</a><a class="Back_Input" href="javascript:Back();">Back</a></h2>
+    </div>
+  </body>
+  <script type="text/javascript" src="js/Chart.js"></script>
+  <script type="text/javascript" src="js/Displacement_Lab.js"></script>
+</html>
