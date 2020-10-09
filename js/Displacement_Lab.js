@@ -1267,14 +1267,14 @@ function Bef_Calc(n) {
   }
 
   if (s1 + s2 < 1) {
-    Back();
     window.alert("Please input Support!!");
+    Back();
     return 1;
   }
 
   if (s1 < 2 && s2 == 0) {
-    Back();
     window.alert("To support the beam, we need at least 1 fixed support or 2 rotatable support!!");
+    Back();
     return 1;
   }
 
